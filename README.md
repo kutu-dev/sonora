@@ -5,3 +5,6 @@
 
 <!-- TODO: Description here -->
 </div>
+
+Notes:
+- Only parse WAV PCM files.

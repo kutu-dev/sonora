@@ -1,6 +1,10 @@
 [package]
-name = "sonoridad"
+name = "sonora"
 version = "0.1.0"
 edition = "2021"
 
 [dependencies]
+anyhow = "1.0.92"
+
+[profile.release]
+strip = true
