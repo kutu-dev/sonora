@@ -24,6 +24,7 @@ pub struct WavFile {
     pub wave_format: WaveFormat,
     pub wave_data: WaveData,
     pub sound_data: Vec<u8>,
+    pub duration: u64,
     index: usize,
 }
 
@@ -41,11 +42,14 @@ impl WavFile {
             bail!("The ChunkSize entry of the file do not match the value calculated by the 'fmt ' and 'data' subchunks (reported: {0} calculated: {calculated_chunk_size})", riff_header.chunk_size);
         }
 
+        let duration = sound_data.len() as u64 / wave_format.num_of_channels as u64 / (wave_format.bits_per_sample as u64 / 8) / wave_format.sample_rate as u64;
+
         Ok(Self{
             riff_header,
             wave_format,
             wave_data,
             sound_data,
+            duration,
             index: 0,
         })
     }
@@ -56,9 +60,10 @@ impl Debug for WavFile {
     fn fmt(&self, formatter: &mut Formatter<'_>) -> fmt::Result {
         formatter
             .debug_struct("WaveFile")
-            .field("RiffHeader", &self.riff_header)
-            .field("WaveFormat", &self.wave_format)
-            .field("WaveData", &self.wave_data)
+            .field("riff_header", &self.riff_header)
+            .field("wave_format", &self.wave_format)
+            .field("wave_data", &self.wave_data)
+            .field("duration", &self.duration)
             .finish()
     }
 }
@@ -76,15 +81,16 @@ impl Iterator for WavFile {
 
     fn next(&mut self) -> Option<Self::Item> {
         if self.index == self.sound_data.len() {
+            self.duration = 0;
             return None;
         }
 
-        Some(match self.wave_format.bits_per_sample {
+        match self.wave_format.bits_per_sample {
             8 => {
                 let value = self.sound_data[self.index] as f64;
                 self.index += 1;
 
-                to_i16_range(value, u8::MIN.into(), u8::MAX.into())
+                Some(to_i16_range(value, u8::MIN.into(), u8::MAX.into()))
             }
 
             16 => {
@@ -92,7 +98,7 @@ impl Iterator for WavFile {
                 let segment_2 = (self.sound_data[self.index + 1] as i16) << 8;
                 self.index += 2;
 
-                segment_1 | segment_2
+                Some(segment_1 | segment_2)
             }
 
             24 => {
@@ -101,7 +107,7 @@ impl Iterator for WavFile {
                 let segment_3 = (self.sound_data[self.index + 2] as i32) << 16;
                 self.index += 3;
 
-                to_i16_range((segment_1 | segment_2 | segment_3) as f64, MIN_I24, MAX_I24)
+                Some(to_i16_range((segment_1 | segment_2 | segment_3) as f64, MIN_I24, MAX_I24))
             }
 
             32 => {
@@ -111,14 +117,14 @@ impl Iterator for WavFile {
                 let segment_4 = (self.sound_data[self.index + 3] as i32) << 24;
                 self.index += 4;
 
-                to_i16_range((segment_1 | segment_2 | segment_3 | segment_4) as f64, u32::MIN.into(), u32::MAX.into())
+                Some(to_i16_range((segment_1 | segment_2 | segment_3 | segment_4) as f64, u32::MIN.into(), u32::MAX.into()))
             }
 
-            _ => {
-                println!("A");
-                0
+            num_of_bits => {
+                println!("{num_of_bits}bit length PCM encoding is not compatible");
+                None
             }
-        })
+        }
     }
 }
 
@@ -136,6 +142,6 @@ impl Source for WavFile {
     }
 
     fn total_duration(&self) -> Option<Duration> {
-        None
+        Some(Duration::new(self.duration, 0))
     }
 }

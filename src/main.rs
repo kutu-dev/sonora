@@ -15,12 +15,13 @@ fn main() -> Result<()> {
 
     let file_path = Path::new(&args[1]);
     let wav_file = WavFile::new(file_path)?;
+    let duration = wav_file.duration;
 
     println!("{wav_file:#?}");
 
     let (_stream, stream_handle) = OutputStream::try_default().unwrap();
     stream_handle.play_raw(wav_file.convert_samples());
-    std::thread::sleep(std::time::Duration::from_secs(5));
+    std::thread::sleep(std::time::Duration::from_secs(duration));
 
     Ok(())
 }
