@@ -32,6 +32,9 @@
           addlicense
           just
           ripgrep
+
+          alsa-lib.dev 
+          pkg-config
         ];
       };
     });

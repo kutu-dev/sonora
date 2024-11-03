@@ -1,9 +1,9 @@
 # Default recipe of the justfile
-default: run-debug
+default: help
 
 # Run the program in debug mode
-run-debug:
-  cargo run
+run file-path:
+  cargo run -- {{file-path}}
 
 # Fix the formatting and fixable linting warnings
 check:

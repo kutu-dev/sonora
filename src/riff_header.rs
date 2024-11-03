@@ -1,10 +1,12 @@
-use std::{fs, path::Path};
+// This Source Code Form is subject to the terms of the Mozilla Public
+// License, v. 2.0. If a copy of the MPL was not distributed with this
+// file, You can obtain one at https://mozilla.org/MPL/2.0/.
+
 use anyhow::{Context, Result, bail};
-use std::fmt::{self, Formatter};
 use crate::file_buffer::FileBuffer;
 
 #[derive(Debug)]
-pub(crate) struct RiffHeader {
+pub struct RiffHeader {
     pub chunk_id: String,
     pub chunk_size: u32,
     pub format: String,

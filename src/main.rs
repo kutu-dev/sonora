@@ -3,14 +3,24 @@
 // file, You can obtain one at https://mozilla.org/MPL/2.0/.
 
 use std::path::Path;
-use sonora::WaveFile;
-use anyhow::{Context, Result, bail};
+use sonora::WavFile;
+use anyhow::Result;
+use std::fs::File;
+use std::io::BufReader;
+use rodio::{Decoder, OutputStream, source::Source};
+use std::env;
 
 fn main() -> Result<()> {
-    let file_path = Path::new("square.wav");
-    let wave_file = WaveFile::new(file_path)?;
+    let args: Vec<String> = env::args().collect();
 
-    println!("{wave_file:#?}");
+    let file_path = Path::new(&args[1]);
+    let wav_file = WavFile::new(file_path)?;
+
+    println!("{wav_file:#?}");
+
+    let (_stream, stream_handle) = OutputStream::try_default().unwrap();
+    stream_handle.play_raw(wav_file.convert_samples());
+    std::thread::sleep(std::time::Duration::from_secs(5));
 
     Ok(())
 }

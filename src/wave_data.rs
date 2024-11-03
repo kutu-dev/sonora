@@ -1,19 +1,18 @@
-use std::{fs, path::Path};
+// This Source Code Form is subject to the terms of the Mozilla Public
+// License, v. 2.0. If a copy of the MPL was not distributed with this
+// file, You can obtain one at https://mozilla.org/MPL/2.0/.
+
 use anyhow::{Context, Result, bail};
-use std::fmt::{self, Formatter};
-use crate::{
-    file_buffer::FileBuffer,
-    wave_format::WaveFormat,
-};
+use crate::file_buffer::FileBuffer;
 
 #[derive(Debug)]
-pub(crate) struct WaveData {
+pub struct WaveData {
     pub subchunk2_id: String,
     pub subchunk2_size: u32,
 }
 
 impl WaveData {
-    pub fn new(buffer: &FileBuffer, wave_format: &WaveFormat) -> Result<Self> {
+    pub fn new(buffer: &FileBuffer) -> Result<Self> {
         let subchunk2_id = buffer.get_string(36, 40)
             .context("Unable to parse the Subchunk2ID entry to a string")?;
 
