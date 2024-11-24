@@ -3,8 +3,7 @@
 
 [![justforfunnoreally.dev badge](https://img.shields.io/badge/justforfunnoreally-dev-9ff)](https://justforfunnoreally.dev)
 
-<!-- TODO: Description here -->
+Simple experimental parser of WAV files.
 </div>
 
-Notes:
-- Only parse WAV PCM files.
+Only works with bare WAV **PCM encoded** files that doesn't have a metadata 'INFO' block. **Not recommended for production usage**.
