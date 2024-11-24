@@ -8,7 +8,6 @@ use std::time::Duration;
 use fmt::Debug;
 use rodio::source::Source;
 use std::fmt::{self, Formatter};
-use emath;
 use crate::{
     file_buffer::FileBuffer,
     riff_header::RiffHeader,

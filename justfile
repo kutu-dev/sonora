@@ -9,7 +9,6 @@ run file-path:
 check:
   cargo fix
   # Run the flake formatting if the `nix` CLI is available
-  command -v nix && nix fmt
   addlicense -l mpl .
 
 # Show this info message

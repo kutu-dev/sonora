@@ -5,9 +5,7 @@
 use std::path::Path;
 use sonora::WavFile;
 use anyhow::Result;
-use std::fs::File;
-use std::io::BufReader;
-use rodio::{Decoder, OutputStream, source::Source};
+use rodio::{OutputStream, source::Source};
 use std::env;
 
 fn main() -> Result<()> {
